@@ -21,6 +21,7 @@ module.exports = {
         useBuiltIns: 'usage' //Remove this line of code to solve the problem 
       }
     ].filter(Boolean),
-    require.resolve('@babel/preset-react')
+    require.resolve('@babel/preset-react'),
+    '@vue/babel-preset-jsx'
   ]
 }

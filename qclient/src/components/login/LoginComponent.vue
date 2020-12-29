@@ -9,14 +9,15 @@
       <FormItem label="用户名" prop="name">
         <Input v-model="formValidate.name" placeholder="请输入用户名"></Input>
       </FormItem>
-      <FormItem label="密码" prop="passworld">
+      <FormItem label="密码" prop="password">
         <Input
-          v-model="formValidate.passworld"
+          v-model="formValidate.password"
           placeholder="请输入密码"
+          @on-enter="handleSubmit('formValidate')"
         ></Input>
       </FormItem>
       <FormItem>
-        <Button type="primary" long @click="handleSubmit('formValidate')"
+        <Button type="primary" :loading="loading" long @click="handleSubmit('formValidate')"
           >登陆</Button
         >
       </FormItem>
@@ -30,10 +31,10 @@
 export default {
   data() {
     return {
+      loading:false,
       formValidate: {
-        name: "",
-        passworld: "",
-        phone: "",
+        name: "qujf",
+        password: "123",
       },
       ruleValidate: {
         name: [
@@ -43,7 +44,7 @@ export default {
             trigger: "blur",
           },
         ],
-        passworld: [
+        password: [
           {
             required: true,
             message: "密码不得为空",
@@ -57,10 +58,18 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.$Message.success("Success!");
-        } else {
-          this.$Message.error("Fail!");
-        }
+          this.api.login(this.formValidate).then(res=>{
+            const { code,message} = res.data
+            if(code!==200){
+              this.$Message.error(message)
+            }else{
+              sessionStorage.setItem('loginFlag',true)
+              sessionStorage.setItem('username',this.formValidate.name)
+              this.$router.push('/')
+            }
+          }).catch(err=>{
+          })
+        } 
       });
     },
     handleReset(name) {
