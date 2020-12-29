@@ -2,16 +2,25 @@
   "name": "qserver",
   "version": "0.0.0",
   "private": true,
-  "openGizp":false,
+  "openGizp": false,
   "scripts": {
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.5",
+    "cnpm": "^6.1.1",
     "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
     "debug": "~2.6.9",
     "express": "~4.16.1",
+    "express-session": "^1.17.1",
+    "gzip": "^0.1.0",
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
-    "morgan": "~1.9.1"
+    "moment": "^2.29.1",
+    "morgan": "~1.9.1",
+    "mysql": "^2.18.1",
+    "unescape": "^1.0.1",
+    "zlib": "^1.0.5"
   }
 }
