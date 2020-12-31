@@ -1,8 +1,8 @@
+import controller from '../controller'
 function guard(router) {
   router.beforeEach((to, from, next) => {
-    let isLogin = sessionStorage.getItem('loginFlag')
+    let isLogin = controller.getItem('loginFlag')
     if (to.name !== "login" && isLogin!=='true') next('/login')
-    // if(to.name==='login' && isLogin==='true') next(false)
     else next()
   });
 }

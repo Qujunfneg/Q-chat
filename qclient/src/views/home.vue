@@ -17,13 +17,40 @@
         </Layout>
       </Layout>
     </Layout>
+    <audio
+      src="../assets/songs/bg.mp3"
+      :autoplay="autoplay"
+      loop
+      controls="controls"
+      controlsList="nodownload"
+      ref="audio"
+    ></audio>
   </div>
 </template>
 <script>
 import vHeader from "../components/v-header";
 import vSlideMneu from "../components/v-slidemenu";
+import { mapState } from "vuex";
 export default {
   components: { vHeader, vSlideMneu },
+  data() {
+    return {
+      autoplay: false,
+    };
+  },
+  computed: {
+    ...mapState("account", ["username"]),
+  },
+  mounted() {
+    this.$eventBus.$on("setMusic", (data) => {
+      if (data) {
+        this.$refs.audio.play();
+      } else {
+        this.$refs.audio.pause();
+      }
+    });
+    this.autoplay=this.$controller.getItem('bgmusic')!=='0'
+  }
 };
 </script>
 <style scoped>
@@ -58,5 +85,8 @@ export default {
 }
 ::v-deep .ivu-layout-header {
   padding: 0 50px 0 24px;
+}
+audio {
+  display: none;
 }
 </style>

@@ -5,18 +5,15 @@
 </template>
 
 <script>
-
 export default {
-  name: 'App',
-  components: {
-  },
-  mounted() {
-  },
-}
+  name: "App",
+  components: {},
+  mounted() {},
+};
 </script>
 
 <style>
-#app{
+#app {
   width: 100%;
   height: 100%;
 }

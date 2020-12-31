@@ -14,10 +14,15 @@
           v-model="formValidate.password"
           placeholder="请输入密码"
           @on-enter="handleSubmit('formValidate')"
+          type="password"
         ></Input>
       </FormItem>
       <FormItem>
-        <Button type="primary" :loading="loading" long @click="handleSubmit('formValidate')"
+        <Button
+          type="primary"
+          :loading="loading"
+          long
+          @click="handleSubmit('formValidate')"
           >登陆</Button
         >
       </FormItem>
@@ -31,10 +36,10 @@
 export default {
   data() {
     return {
-      loading:false,
+      loading: false,
       formValidate: {
         name: "qujf",
-        password: "123",
+        password: "0000",
       },
       ruleValidate: {
         name: [
@@ -58,18 +63,23 @@ export default {
     handleSubmit(name) {
       this.$refs[name].validate((valid) => {
         if (valid) {
-          this.api.login(this.formValidate).then(res=>{
-            const { code,message} = res.data
-            if(code!==200){
-              this.$Message.error(message)
-            }else{
-              sessionStorage.setItem('loginFlag',true)
-              sessionStorage.setItem('username',this.formValidate.name)
-              this.$router.push('/')
-            }
-          }).catch(err=>{
-          })
-        } 
+          this.api
+            .login(this.formValidate)
+            .then((res) => {
+              const { code, message ,data} = res.data;
+              if (code !== 200) {
+                this.$Message.error(message);
+              } else {
+                this.$controller.setItem({
+                  loginFlag:true,
+                  username:data.name,
+                  bgmusic:data.bgmusic
+                })
+                this.$router.push("/");
+              }
+            })
+            .catch((err) => {});
+        }
       });
     },
     handleReset(name) {
@@ -94,5 +104,4 @@ export default {
 ::v-deep .ivu-form .ivu-form-item-label {
   color: #e9e1da;
 }
-
 </style>

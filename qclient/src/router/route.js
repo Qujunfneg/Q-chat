@@ -6,6 +6,7 @@ import Gulists from '../views/home/gulists.vue'
 import GuForm from '../views/home/guform.vue'
 import userManage from '../views/admin/userManage.vue'
 import featureManage from '../views/admin/featureManage.vue'
+import Chart from '../views/chat/chat.vue'
 const routes = [
   {
     path: "/login",
@@ -33,6 +34,10 @@ const routes = [
       path:'/featureManage',
       name:'featureManage',
       component:featureManage
+    },{
+      path:'/chart',
+      name:'chart',
+      component:Chart
     }]
   },
   {
