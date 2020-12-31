@@ -16,6 +16,7 @@ app.use(cors({
   origin:'http://localhost:8080',
   credentials:true
 }))
+
 app.use(session({
   secret:"keyboard cat",
   resave:true,
@@ -44,6 +45,7 @@ app.use(function(req, res, next) {
   next(createError(404));
 });
 
+app.set('basePath',__dirname)
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -51,6 +53,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
+  console.log(err.message)
   res.status(err.status || 500);
   res.render('error');
 });

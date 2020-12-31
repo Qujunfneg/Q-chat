@@ -1,5 +1,5 @@
 var express = require("express");
-var qsql = require("../mysql");
+var { ssql, S_sql } = require("../mysql/ssql");
 var router = express.Router();
 var moment = require("moment");
 
@@ -10,23 +10,15 @@ router.get("/", function (req, res, next) {
 });
 router.post("/regist", (req, res) => {
   const { body } = req;
-  let sql = `INSERT INTO quser(\`name\`,phone,time,password) values ('${
-    body.name
-  }','${body.phone}','${moment().format("YYYY-MM-DD HH:mm:ss")}','${
-    body.password
-  }')`;
-  qsql
-    .sql(sql)
-    .then((data) => {
-      res.json({ message: "添加成功", code: 200 });
-    })
-    .catch((err) => {
-      console.log(err);
-      res.json({
-        code: 500,
-        message: err.sqlMessage,
-      });
-    });
+  let param = {
+    name: body.name,
+    phone: body.phone,
+    time: moment().format("YYYY-MM-DD HH:mm:ss"),
+    password: body.password,
+  };
+  S_sql(ssql.table("quser").add(param), res).then((id) => {
+    res.json({ message: "添加成功", code: 200 });
+  });
 });
 router.post("/login", (req, res) => {
   const { body } = req;
@@ -36,36 +28,28 @@ router.post("/login", (req, res) => {
       message: "您已经登录过了",
     });
   } else {
-    let sql = `SELECT * FROM quser WHERE \`name\`='${body.name}'`;
-    qsql
-      .sql(sql)
-      .then((data) => {
-        console.log(data);
-        if (data.length === 0) {
+    S_sql(ssql.table('quser').field().select({name:body.name}),res).then(data=>{
+      if (data.length === 0) {
+        res.json({
+          code: 404,
+          message: "该用户不存在",
+        });
+      } else {
+        let pass = data[0].password;
+        if (pass !== body.password) {
           res.json({
-            code: 404,
-            message: "该用户不存在",
+            code: 401,
+            message: "密码不正确",
           });
         } else {
-          let pass = data[0].PASSWORD;
-          if (pass !== body.password) {
-            res.json({
-              code: 401,
-              message: "密码不正确",
-            });
-          } else {
-            req.session.userName = req.body.name;
-            res.json({ message: "success", code: 200 });
-          }
+          req.session.userName = req.body.name;
+          res.json({ message: "success", code: 200,data:{
+            bgmusic:data[0].bgmusic,
+            name:data[0].name
+          } });
         }
-      })
-      .catch((err) => {
-        console.log(err);
-        res.json({
-          code: 500,
-          message: err.sqlMessage,
-        });
-      });
+      }
+    }) 
   }
 });
 router.get("/logout", (req, res) => {
