@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="containerR" v-loading="loading">
     <Button
       type="primary"
       icon="md-add"
@@ -25,10 +25,30 @@ export default {
   mixins: [list],
   data() {
     return {
+      loading: false,
       columns: [
         {
           title: "股票名称",
           key: "gname",
+          render: (h, params) => {
+            return h(
+              "a",
+              {
+                attrs: {
+                  href: "javascript:",
+                },
+                style: {
+                  cursor: "pointer",
+                },
+                on:{
+                  click:()=>{
+                    this.toView(params)
+                  }
+                }
+              },
+              params.row.gname
+            );
+          },
         },
         {
           title: "股票代码",
@@ -85,15 +105,83 @@ export default {
             return h("span", params.row.cycle + dobj[params.row.unit]);
           },
         },
+        {
+          title: "操作",
+          key: "action",
+
+          render: (h, params) => {
+            return h("div", [
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "error",
+                    size: "small",
+                  },
+                  style: {
+                    marginRight: "5px",
+                  },
+                  on: {
+                    click: () => {
+                      this.del(params);
+                    },
+                  },
+                },
+                "删除"
+              ),
+              h(
+                "Button",
+                {
+                  props: {
+                    type: "primary",
+                    size: "small",
+                  },
+                },
+                "编辑"
+              ),
+            ]);
+          },
+        },
       ],
       tableData: [],
       total: 0,
     };
   },
   mounted() {
-    this.api.getlist({ userid: "qujf" }).then((res) => {
-      this.tableData = res.data.data;
-    });
+    this.updateList();
+  },
+  methods: {
+    updateList() {
+      this.tableData = [];
+      this.loading = true;
+      this.api
+        .getlist({ userid: "qujf" })
+        .then((res) => {
+          this.tableData = res.data.data;
+        })
+        .finally(() => (this.loading = false));
+    },
+    del(params) {
+      this.$Modal.confirm({
+        title: "确认要删除该条数据吗？",
+        onOk: () => {
+          this.loading = true;
+          this.api
+            .guDel({ id: params.row.id })
+            .then((res) => {
+              if (res.data.code === 200) {
+                this.$Message.success("删除成功");
+                this.updateList();
+              }
+            })
+            .finally(() => (this.loading = false));
+        },
+        onCancle: () => {},
+      });
+    },
+    toView(params){
+      this.$router.push({path:'/guView',query:{id:params.row.id}})
+    }
   },
 };
 </script>

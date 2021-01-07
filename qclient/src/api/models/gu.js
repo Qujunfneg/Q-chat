@@ -16,9 +16,23 @@ export default {
   guAdd(opiton) {
     let param = {
       url: `gu/add`,
-      method:'post',
-      data:opiton
+      method: "post",
+      data: opiton,
     };
     return request(param);
   },
+  guDel(opiton) {
+    let param = {
+      url: `gu/delete`,
+      method: "post",
+      data: opiton,
+    };
+    return request(param);
+  },
+  guInfo(code){
+    let param = {
+      url: `gu/guInfo/${code}`,
+    };
+    return request(param);
+  }
 };

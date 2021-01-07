@@ -1,12 +1,18 @@
 <template>
-  <div>
+  <div class="containerR" v-loading="loading">
     <Breadcrumb>
       <BreadcrumbItem to="/gulists">列表</BreadcrumbItem>
       <BreadcrumbItem>新增</BreadcrumbItem>
     </Breadcrumb>
     <Divider />
-    <Form :model="formItem" :label-width="100" style="width:600px">
-      <FormItem label="名称">
+    <Form
+      :model="formItem"
+      ref="formValidate"
+      :rules="ruleValidate"
+      :label-width="100"
+      style="width:600px"
+    >
+      <FormItem label="名称" prop="gucode">
         <Select v-model="formItem.gucode" filterable>
           <Option
             :value="item.code"
@@ -79,7 +85,7 @@
           :step="0.01"
         ></InputNumber>
       </FormItem>
-      <FormItem label="购买时间">
+      <FormItem label="购买时间" prop="time">
         <DatePicker
           type="date"
           placeholder="Select date"
@@ -105,17 +111,20 @@
         />
       </FormItem>
       <FormItem>
-        <Button type="primary" @click="submitForm">Submit</Button>
-        <Button style="margin-left: 8px">Cancel</Button>
+        <Button type="primary" @click="submitForm('formValidate')"
+          >确认</Button
+        >
+        <Button style="margin-left: 8px" @click="$router.push('/')">取消</Button>
       </FormItem>
     </Form>
   </div>
 </template>
 <script>
-import dayjs from 'dayjs';
+import dayjs from "dayjs";
 export default {
   data() {
     return {
+      loading:false,
       formItem: {
         gname: "",
         gucode: "",
@@ -133,20 +142,36 @@ export default {
       },
       gucodeLists: [],
       avbdok: false,
+      ruleValidate: {
+        gucode: [
+          { required: true, message: "股票名称不得为空", trigger: "change" },
+        ],
+        time: [
+          { required: true,type: 'date', message: "购买时间不得为空", trigger: "change" },
+        ],
+      },
     };
   },
   methods: {
-    submitForm() {
-      this.avbdok = true;
-      let param = this.formItem;
-      param.username = sessionStorage.getItem("username");
-      param.gname = this.gucodeLists.filter(
-        (item) => item.code === param.gucode
-      )[0].name;
-      param.time = dayjs(param.time ).format('YYYY-MM-DD HH:mm:ss')
-      this.api.guAdd(param).then(res=>{
-        debugger
-      })
+    submitForm(name) {
+      this.$refs[name].validate((valid) => {
+        if (valid) {
+          this.avbdok = true;
+          let param = this.formItem;
+          param.username = sessionStorage.getItem("username");
+          param.gname = this.gucodeLists.filter(
+            (item) => item.code === param.gucode
+          )[0].name;
+          param.time = dayjs(param.time).format("YYYY-MM-DD HH:mm:ss");
+          this.loading=true
+          this.api.guAdd(param).then((res) => {
+            if (res.data.code === 200) {
+              this.$Message.success("添加成功");
+              this.$router.push("/");
+            }
+          }).finally(()=>this.loading=false);
+        }
+      });
     },
   },
   mounted() {
@@ -154,6 +179,9 @@ export default {
     this.api.getGuInfo().then((res) => {
       this.gucodeLists = res.data.data;
     });
+    setTimeout(()=>{
+      this.loading=false
+    },1000)
   },
   beforeRouteLeave(to, from, next) {
     if (!this.avbdok) {

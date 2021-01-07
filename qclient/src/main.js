@@ -32,7 +32,25 @@ Vue.use(
     connection: SocketIO("localhost:3000"),
   })
 );
-
+Vue.directive('loading',{
+  bind:function(el,binding,vnode,oldVnode){
+    var html = document.createElement('div')
+    html.className='spin'
+    html.style.cssText="position:absolute;top:0;bottom:0;left:0;right:0;background:#fff;opacity:0.9;z-index:100"
+    var img = document.createElement('img')
+    var src=require('./assets/ico/spin.gif')
+    img.src=src
+    img.style.cssText="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:60px"
+    html.appendChild(img)
+    el.insertBefore(html,el.children[0])
+    if(!binding.value){
+      html.style.display='none'
+    }
+  },
+  update:function(el,binding,vnode,oldVnode){
+    [...el.children].find(item=>item.className='spin').style.display=binding.value?'block':'none'
+  }
+})
 new Vue({
   router,
   store,

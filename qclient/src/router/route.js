@@ -7,6 +7,7 @@ import GuForm from '../views/home/guform.vue'
 import userManage from '../views/admin/userManage.vue'
 import featureManage from '../views/admin/featureManage.vue'
 import Chart from '../views/chat/chat.vue'
+import GuView from '../views/home/guView.vue'
 const routes = [
   {
     path: "/login",
@@ -38,6 +39,10 @@ const routes = [
       path:'/chart',
       name:'chart',
       component:Chart
+    },{
+      path:'/guView',
+      name:'guView',
+      component:GuView
     }]
   },
   {
